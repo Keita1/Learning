@@ -32,15 +32,20 @@ class War(object):
 
     def play_game(self):
         while self.winner is None:
-            print self.win_counts
+            # print self.win_counts
             self.play_round()
         self.play_two_of_three()
 
 
     def play_two_of_three(self):
         while self.win_counts[self.winner] != 2:
-            print self.win_counts[self.winner] != 2
+            # print self.win_counts[self.winner] != 2
             self.winner = None
+            self.pot = []
+            self.player1.hand = []
+            self.player2.hand = []
+            self.player1.discard = []
+            self.player2.discard = []
             self.deal()
             self.play_game()
             #
@@ -111,11 +116,11 @@ class War(object):
         if self.human:
             self.pot.sort(reverse=True)
             pot_str = self.cards_to_str(self.pot)
-            print "%s receives the cards: %s" % (player.name, pot_str)
+            # print "%s receives the cards: %s" % (player.name, pot_str)
 
     def display_card_inv(self, player1, player2):
-        print "In the discard pile, %s has %d cards and %s has %d cards" % (player1.name, len(player1.discard),player2.name, len(player2.discard) )
-        print "In their hands, %s has %d cards and %s has %d cards" % (player1.name, len(player1.hand),player2.name, len(player2.hand) )
+        # print "In the discard pile, %s has %d cards and %s has %d cards" % (player1.name, len(player1.discard),player2.name, len(player2.discard) )
+        # print "In their hands, %s has %d cards and %s has %d cards" % (player1.name, len(player1.hand),player2.name, len(player2.hand) )
         return
 
     def display_war(self, cards1, cards2):
