@@ -1,16 +1,20 @@
 from deck import Deck
 from war_player import Player
+from collections import Counter
 
 
 class War(object):
-    def __init__(self, human=True):
+    def __init__(self, war_size=5, human=True):
         self.human = human
         self.player1 = self.create_player("Player 1")
         self.player2 = self.create_player("Player 2")
+        self.win_counts = Counter({self.player1: 0, self.player2:0})
+        self.size = war_size
         self.winner = None
         self.loser = None
         self.pot = []
         self.deal()
+
 
     def create_player(self, title):
         if self.human:
@@ -28,14 +32,29 @@ class War(object):
 
     def play_game(self):
         while self.winner is None:
+            print self.win_counts
             self.play_round()
-        self.display_winner()
+        self.play_two_of_three()
+
+
+    def play_two_of_three(self):
+        while self.win_counts[self.winner] != 2:
+            print self.win_counts[self.winner] != 2
+            self.winner = None
+            self.deal()
+            self.play_game()
+            #
+        else:
+            #self.winner = None
+            self.display_winner()
+
 
     def draw_card(self, player, other_player):
         card = player.play_card()
         if not card:
             self.winner = other_player.name
             self.loser = player.name
+            self.win_counts[self.winner] += 1
             return
         self.pot.append(card)
         return card
@@ -51,8 +70,8 @@ class War(object):
         return cards
 
     def war(self):
-        cards1 = self.draw_cards(self.player1, self.player2, 3)
-        cards2 = self.draw_cards(self.player2, self.player1, 3)
+        cards1 = self.draw_cards(self.player1, self.player2, self.size)
+        cards2 = self.draw_cards(self.player2, self.player1, self.size)
         self.display_war(cards1, cards2)
 
     def play_round(self):
@@ -66,14 +85,15 @@ class War(object):
             self.war()
             self.play_round()
         elif card1 > card2:
-            self.give_cards(self.player1)
+            self.give_cards(self.player1, self.player2)
         else:
-            self.give_cards(self.player2)
+            self.give_cards(self.player2, self.player1)
 
-    def give_cards(self, player):
-        player.receive_cards(self.pot)
-        self.display_receive(player)
+    def give_cards(self, player1, player2):
+        player1.receive_cards(self.pot)
+        self.display_receive(player1)
         self.pot = []
+        self.display_card_inv(self.player1, self.player2)
 
     def pause(self):
         if self.human:
@@ -93,6 +113,11 @@ class War(object):
             pot_str = self.cards_to_str(self.pot)
             print "%s receives the cards: %s" % (player.name, pot_str)
 
+    def display_card_inv(self, player1, player2):
+        print "In the discard pile, %s has %d cards and %s has %d cards" % (player1.name, len(player1.discard),player2.name, len(player2.discard) )
+        print "In their hands, %s has %d cards and %s has %d cards" % (player1.name, len(player1.hand),player2.name, len(player2.hand) )
+        return
+
     def display_war(self, cards1, cards2):
         if self.human:
             print "WAR!"
@@ -105,5 +130,5 @@ class War(object):
 
 
 if __name__ == '__main__':
-    game = War()
+    game = War(war_size=5)
     game.play_game()
